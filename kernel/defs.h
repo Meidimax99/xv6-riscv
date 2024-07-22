@@ -22,6 +22,8 @@ void            bunpin(struct buf*);
 void            consoleinit(void);
 void            consoleintr(int);
 void            consputc(int);
+void            m_consputc(int);
+
 
 // exec.c
 int             exec(char*, char**);
@@ -81,8 +83,7 @@ int             pipewrite(struct pipe*, uint64, int);
 void            printf(char*, ...);
 void            panic(char*) __attribute__((noreturn));
 void            printfinit(void);
-void
-printf_no_lock(char *fmt, ...);
+void            m_printf(char *fmt, ...);
 
 // proc.c
 int             cpuid(void);
@@ -156,6 +157,7 @@ void            uartinit(void);
 void            uartintr(void);
 void            uartputc(int);
 void            uartputc_sync(int);
+void            m_uartputc_sync(int);
 int             uartgetc(void);
 
 // vm.c

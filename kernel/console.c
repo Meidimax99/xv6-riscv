@@ -41,6 +41,17 @@ consputc(int c)
   }
 }
 
+void
+m_consputc(int c)
+{
+  if(c == BACKSPACE){
+    // if the user typed backspace, overwrite with a space.
+    m_uartputc_sync('\b'); m_uartputc_sync(' '); m_uartputc_sync('\b');
+  } else {
+    m_uartputc_sync(c);
+  }
+}
+
 struct {
   struct spinlock lock;
   

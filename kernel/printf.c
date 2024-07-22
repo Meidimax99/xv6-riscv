@@ -50,6 +50,30 @@ printint(int xx, int base, int sign)
 }
 
 static void
+m_printint(int xx, int base, int sign)
+{
+  char buf[16];
+  int i;
+  uint x;
+
+  if(sign && (sign = xx < 0))
+    x = -xx;
+  else
+    x = xx;
+
+  i = 0;
+  do {
+    buf[i++] = digits[x % base];
+  } while((x /= base) != 0);
+
+  if(sign)
+    buf[i++] = '-';
+
+  while(--i >= 0)
+    m_consputc(buf[i]);
+}
+
+static void
 printptr(uint64 x)
 {
   int i;
@@ -57,6 +81,16 @@ printptr(uint64 x)
   consputc('x');
   for (i = 0; i < (sizeof(uint64) * 2); i++, x <<= 4)
     consputc(digits[x >> (sizeof(uint64) * 8 - 4)]);
+}
+
+static void
+m_printptr(uint64 x)
+{
+  int i;
+  m_consputc('0');
+  m_consputc('x');
+  for (i = 0; i < (sizeof(uint64) * 2); i++, x <<= 4)
+    m_consputc(digits[x >> (sizeof(uint64) * 8 - 4)]);
 }
 
 // Print to the console. only understands %d, %x, %p, %s.
@@ -135,7 +169,7 @@ printfinit(void)
 }
 //for printing in machine mode
 void
-printf_no_lock(char *fmt, ...)
+m_printf(char *fmt, ...)
 {
   va_list ap;
   int i, c;
@@ -147,7 +181,7 @@ printf_no_lock(char *fmt, ...)
   va_start(ap, fmt);
   for(i = 0; (c = fmt[i] & 0xff) != 0; i++){
     if(c != '%'){
-      consputc(c);
+      m_consputc(c);
       continue;
     }
     c = fmt[++i] & 0xff;
@@ -155,27 +189,27 @@ printf_no_lock(char *fmt, ...)
       break;
     switch(c){
     case 'd':
-      printint(va_arg(ap, int), 10, 1);
+      m_printint(va_arg(ap, int), 10, 1);
       break;
     case 'x':
-      printint(va_arg(ap, int), 16, 1);
+      m_printint(va_arg(ap, int), 16, 1);
       break;
     case 'p':
-      printptr(va_arg(ap, uint64));
+      m_printptr(va_arg(ap, uint64));
       break;
     case 's':
       if((s = va_arg(ap, char*)) == 0)
         s = "(null)";
       for(; *s; s++)
-        consputc(*s);
+        m_consputc(*s);
       break;
     case '%':
-      consputc('%');
+      m_consputc('%');
       break;
     default:
       // Print unknown % sequence to draw attention.
-      consputc('%');
-      consputc(c);
+      m_consputc('%');
+      m_consputc(c);
       break;
     }
   }
