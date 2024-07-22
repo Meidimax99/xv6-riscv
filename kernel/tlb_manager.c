@@ -10,7 +10,7 @@ void tlb_handle_miss(uint64 addr, uint64 satp) {
   //pagetable_t pt =  MAKE_PT(satp);
   //TODO should the tlb miss handler be able to allocate? Probably not -> Page Handlers job
   //pte_t *pte = walk(pt, addr, 0);
-
+  w_mepc(0x12);
   //TODO Verify valid flag
   w_tlbh(addr);
   uint16 prot =  PTE_R | PTE_W | PTE_U | PTE_V;
